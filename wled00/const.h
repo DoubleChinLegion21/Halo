@@ -210,6 +210,7 @@
 #define USERMOD_ID_DEEP_SLEEP            55     //Usermod "usermod_deep_sleep.h"
 #define USERMOD_ID_RF433                 56     //Usermod "usermod_v2_RF433.h"
 #define USERMOD_ID_BRIGHTNESS_FOLLOW_SUN 57     //Usermod "usermod_v2_brightness_follow_sun.h"
+#define USERMOD_ID_BREAKLIGHT            58     //Usermod "usermod_breaklight.h"
 
 //Access point behavior
 #define AP_BEHAVIOR_BOOT_NO_CONN          0     //Open AP when no connection after boot
@@ -524,7 +525,7 @@
 #endif
 
 #ifndef ABL_MILLIAMPS_DEFAULT
-  #define ABL_MILLIAMPS_DEFAULT 850   // auto lower brightness to stay close to milliampere limit
+  #define ABL_MILLIAMPS_DEFAULT 500   // auto lower brightness to stay close to milliampere limit
 #else
   #if ABL_MILLIAMPS_DEFAULT == 0      // disable ABL
   #elif ABL_MILLIAMPS_DEFAULT < 250   // make sure value is at least 250
@@ -605,10 +606,10 @@
     #define DEFAULT_LED_PIN 2    // GPIO2 (D4) on Wemos D1 mini compatible boards, safe to use on any board
   #endif
 #else
-  #define DEFAULT_LED_PIN 16   // aligns with GPIO2 (D4) on Wemos D1 mini32 compatible boards (if it is unusable it will be reassigned in WS2812FX::finalizeInit())
+  #define DEFAULT_LED_PIN 14   // aligns with GPIO2 (D4) on Wemos D1 mini32 compatible boards (if it is unusable it will be reassigned in WS2812FX::finalizeInit())
 #endif
 #define DEFAULT_LED_TYPE TYPE_WS2812_RGB
-#define DEFAULT_LED_COUNT 30
+#define DEFAULT_LED_COUNT 60
 
 #define INTERFACE_UPDATE_COOLDOWN 1000 // time in ms to wait between websockets, alexa, and MQTT updates
 
