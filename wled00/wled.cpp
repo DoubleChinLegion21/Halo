@@ -423,7 +423,7 @@ void WLED::setup()
   multiWiFi.push_back(WiFiConfig(CLIENT_SSID,CLIENT_PASS)); // initialise vector with default WiFi
 
   DEBUG_PRINTLN(F("Reading config"));
-  deserializeConfigFromFS();
+  bool needsCfgSave = deserializeConfigFromFS();
   DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
 
 #if defined(STATUSLED) && STATUSLED>=0
@@ -442,6 +442,8 @@ void WLED::setup()
   userSetup();
   UsermodManager::setup();
   DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
+
+  if (needsCfgSave) serializeConfigToFS(); // usermods required new parameters; need to wait for strip to be initialised #4752
 
   // Disable Welcome Page
   // if (strcmp(multiWiFi[0].clientSSID, DEFAULT_CLIENT_SSID) == 0)
@@ -530,6 +532,7 @@ void WLED::setup()
 void WLED::beginStrip()
 {
   // Initialize NeoPixel Strip and button
+  strip.setTransition(0); // temporarily prevent transitions to reduce segment copies
   strip.finalizeInit(); // busses created during deserializeConfig() if config existed
   strip.makeAutoSegments();
   strip.setBrightness(0);
@@ -557,6 +560,8 @@ void WLED::beginStrip()
   if (bootPreset > 0) {
     applyPreset(bootPreset, CALL_MODE_INIT);
   }
+
+  strip.setTransition(transitionDelayDefault);  // restore transitions
 
   // init relay pin
   if (rlyPin >= 0) {
@@ -739,9 +744,6 @@ void WLED::initInterfaces()
   e131.begin(e131Multicast, e131Port, e131Universe, E131_MAX_UNIVERSE_COUNT);
   ddp.begin(false, DDP_DEFAULT_PORT);
   reconnectHue();
-#ifndef WLED_DISABLE_MQTT
-  initMqtt();
-#endif
   interfacesInited = true;
   wasConnected = true;
 }
@@ -751,7 +753,9 @@ void WLED::handleConnection()
   static bool scanDone = true;
   static byte stacO = 0;
   const unsigned long now = millis();
+  #ifdef WLED_DEBUG
   const unsigned long nowS = now/1000;
+  #endif
   const bool wifiConfigured = WLED_WIFI_CONFIGURED;
 
   // ignore connection handling if WiFi is configured and scan still running
