@@ -52,7 +52,8 @@ class UsermodBreakLight : public Usermod {
     {      
       Wire.begin(21, 22);  // Initialise I2C communication as MASTER      
       // 5 and 6 for xiao esp32s3
-      // 21 and 22 for HaloCore
+      // 21 and 22 for HaloCore Gen 1
+      // 35 and 36 for HaloTail Gen 1
 
       // BMA250 I2C address is 0x18(24)
       #define Addr 0x18
@@ -163,6 +164,13 @@ class UsermodBreakLight : public Usermod {
       if (!enabled || strip.isUpdating()) 
         return;
 
+      // Serial.print("xAccl:");
+      // Serial.print(xAccl);
+      // Serial.print(",yAccl:");
+      // Serial.print(yAccl);
+      // Serial.print(",zAccl:");
+      // Serial.print(zAccl); 
+
       unsigned long nowTime = millis();
       bool recalcBrakeLight = (nowTime - lastTime > 30);
       bool turnOffBrakeLight = (nowTime - brakeLightSetTime > brakeSustainDuration); 
@@ -181,7 +189,7 @@ class UsermodBreakLight : public Usermod {
           travelAccl = -travelAccl;
         
         // First, handle if wheels is on side, vertical axis will be 0.
-        if ((-45 < verticalAccl && verticalAccl < 45 && travelAccl > 200) && sidewaysSleep) 
+        if ((-50 < verticalAccl && verticalAccl < 50 && travelAccl > 200) && sidewaysSleep) 
         {
           if (currentPreset == 2) {
             applyPreset(1);
@@ -366,7 +374,7 @@ class UsermodBreakLight : public Usermod {
       configComplete &= getJsonValue(top["travelAxis"], travelAxis, 2);
       configComplete &= getJsonValue(top["verticalAxis"], verticalAxis, 0);
       configComplete &= getJsonValue(top["invertAxis"], invertAxis, true);
-      configComplete &= getJsonValue(top["engageBrakeLightGeForce"], engageBrakeLightGeForce, 45);
+      configComplete &= getJsonValue(top["engageBrakeLightGeForce"], engageBrakeLightGeForce, 60);
       configComplete &= getJsonValue(top["futureFeature"], futureFeature, 130);
       configComplete &= getJsonValue(top["disengageBrakeLightGeForce"], disengageBrakeLightGeForce, -20);
       configComplete &= getJsonValue(top["brakeSustainDuration"], brakeSustainDuration, 2500);

@@ -443,8 +443,9 @@ void WLED::setup()
   UsermodManager::setup();
   DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
 
-  if (strcmp(multiWiFi[0].clientSSID, DEFAULT_CLIENT_SSID) == 0)
-    showWelcomePage = true;
+  // Disable Welcome Page
+  // if (strcmp(multiWiFi[0].clientSSID, DEFAULT_CLIENT_SSID) == 0)
+  //   showWelcomePage = true;
   WiFi.persistent(false);
   WiFi.onEvent(WiFiEvent);
   WiFi.mode(WIFI_STA); // enable scanning
